@@ -21,6 +21,7 @@ def dlog(string):
     if debug:
         print(string)
 
+
 maze = [['S', ' ', ' ', ' ', ' ', 'X', 'X'],
         ['X', ' ', 'X', 'X', ' ', 'X', 'X'],
         ['X', ' ', 'X', 'X', ' ', ' ', ' '],
@@ -30,6 +31,7 @@ maze = [['S', ' ', ' ', ' ', ' ', 'X', 'X'],
 
 
 goal = (5, 0)
+origin = (0, 0)
 
 class Node():
     def __init__(self, parent, coords):
@@ -51,10 +53,12 @@ class Node():
 
     def getNeighbors(self):
         neighbors = []
-        for i in range(-1, 2):
-            for j in range(-1, 2):
-                if (i != 0 or j != 0):
-                    neighbors.append((self.x-i, self.y-j))
+
+        neighbors.append((self.x-1, self.y))
+        neighbors.append((self.x+1, self.y))
+        neighbors.append((self.x, self.y+1))
+        neighbors.append((self.x, self.y-1))
+        
         return neighbors
 
     def isGoal(self):
@@ -65,8 +69,12 @@ class Frontier():
         self.frontier = []
         self.explored = set()
 
+    def __str__(self):
+        return('frontier is full of these nodeybois: ' + str(self.frontier))
+
     def addNode(self, node: Node):
         self.frontier.append(node)
+        print('node added')
         self.explored.add(node.coords)
 
     def removeNode(self) -> Node:
@@ -84,9 +92,10 @@ class Frontier():
         return shortest
 
 def isValid(coordinates):
-    if (coordinates[0] < len(maze) and coordinates[1] < len(maze[0])):
-        if maze[coordinates[0]][coordinates[1]] != 'X':
-            return True
+    if(coordinates[0] < len(maze) and coordinates[0] > -1):
+        if (coordinates[1] < len(maze[0]) and coordinates[1] > -1):
+            if maze[coordinates[0]][coordinates[1]] != 'X':
+                return True
 
     return False
 
@@ -105,9 +114,9 @@ def tracePath(endNode):
 
     return path[::-1]
 
-origin =  Node(None, (0, 0))
+originNode =  Node(None, origin)
 frontier = Frontier()
-frontier.addNode(origin)
+frontier.addNode(originNode)
 goalFound = False
 currentNode = None
 
@@ -116,12 +125,13 @@ printMaze()
 while not goalFound:
     # Pop node (will be the node that is shortest distance to the goal thru function in Frontier)
     currentNode = frontier.removeNode()
+    print(frontier)
 
     if currentNode.coords == goal:
         goalFound = True
     else:
         # Add all neighbors in node of interest
-        print(currentNode)
+        #print(currentNode)
         for neighbor in currentNode.neighbors:
             if neighbor not in frontier.explored:
                 if isValid(neighbor):
@@ -134,4 +144,4 @@ print('Path:', path)
 for loc in path:
     maze[loc[0]][loc[1]] = 'O'
 
-gui.initialize(maze)
+#gui.initialize(maze)
