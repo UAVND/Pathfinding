@@ -22,8 +22,8 @@ def dlog(string):
         print(string)
 
 maze = [['S', ' ', ' ', ' ', ' ', 'X', 'X'],
-        ['X', 'X', 'X', 'X', ' ', 'X', 'X'],
-        ['X', 'X', 'X', 'X', ' ', ' ', ' '],
+        ['X', ' ', 'X', 'X', ' ', 'X', 'X'],
+        ['X', ' ', 'X', 'X', ' ', ' ', ' '],
         [' ', ' ', ' ', 'X', 'X', 'X', ' '],
         [' ', 'X', ' ', 'X', ' ', ' ', ' '],
         ['F', 'X', ' ', ' ', ' ', 'X', 'X']]
@@ -121,13 +121,10 @@ while not goalFound:
         goalFound = True
     else:
         # Add all neighbors in node of interest
-        dlog('checkpoint 1')
         print(currentNode)
         for neighbor in currentNode.neighbors:
             if neighbor not in frontier.explored:
-                dlog('c2')
                 if isValid(neighbor):
-                    dlog('c3')
                     new = Node(currentNode, neighbor)
                     frontier.addNode(new)
 
