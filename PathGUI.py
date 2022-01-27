@@ -1,3 +1,8 @@
+# Zach Vincent
+# Tkinter GUI for pathfinding
+# Last updated 1/26/2022
+# v1.0
+
 from tkinter import *
 from tkinter import ttk
 import random
@@ -68,7 +73,6 @@ root = Tk()
 grid = []
 
 def initialize(maze):
-    print('starting... ', end='')
     grid = maze
 
     option_frame = Frame(root, width=100, height=100, bg='red')
@@ -92,6 +96,6 @@ def initialize(maze):
 
     buildGrid(maze, canv)
 
-    print('running')
+    print('success')
     root.mainloop()
 

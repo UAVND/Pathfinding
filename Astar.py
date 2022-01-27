@@ -1,17 +1,7 @@
 # Zach Vincent
 # A* pathfinding
-# Last updated 1/25/2022
-
-# Add starting node to frontier
-# While goal isn't found:
-    # Evaluate if any surrounding nodes are goal node
-    # If not:
-        # Determine if any of eight surrounding nodes have already been explored
-        # Calculate heuristics for explorable nodes
-        # Add unexplored nodes to explored set
-        # Add nodes to frontier in order of lowest heuristic value
-    # If so:
-        # Trace through nodes and their parents to find path
+# Last updated 1/26/2022
+# v1.0
 
 import math
 import PathGUI as gui
@@ -22,31 +12,46 @@ def dlog(string):
         print(string)
 
 
-maze = [['S', ' ', ' ', ' ', ' ', 'X', 'X'],
-        ['X', ' ', ' ', 'X', ' ', 'X', 'X'],
-        ['X', 'X', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', 'X', 'X', ' '],
-        [' ', 'X', ' ', 'X', ' ', ' ', ' '],
-        ['F', ' ', ' ', ' ', ' ', 'X', 'X']]
+maze = [['S', ' ', ' ', ' ', ' ', 'X', 'X', ' ', ' ', 'X', ' ', 'X', 'X'],
+        ['X', ' ', 'X', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
+        ['X', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', 'X', ' ', ' '],
+        [' ', ' ', 'X', ' ', ' ', ' ', ' ', 'X', ' ', 'X', 'X', 'X', ' '],
+        [' ', ' ', ' ', 'X', 'X', ' ', 'X', 'X', ' ', 'X', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', 'X', 'X', ' ', ' ', 'X', ' ', 'X', 'X'],
+        ['X', ' ', ' ', 'X', ' ', 'X', 'X', ' ', ' ', 'X', ' ', 'X', 'X'],
+        ['X', 'X', ' ', ' ', ' ', 'X', ' ', ' ', 'X', ' ', 'X', ' ', ' '],
+        [' ', 'X', ' ', ' ', 'X', ' ', 'X', ' ', ' ', ' ', 'X', 'X', ' '],
+        [' ', 'X', ' ', 'X', ' ', ' ', 'X', ' ', ' ', 'X', ' ', 'X', ' '],
+        [' ', 'X', ' ', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', 'X', 'X'],
+        ['X', 'X', ' ', ' ', 'X', ' ', 'X', ' ', ' ', 'X', ' ', 'X', 'X'],
+        ['X', 'X', ' ', ' ', ' ', ' ', 'X', ' ', ' ', 'X', ' ', 'X', ' '],
+        [' ', 'X', ' ', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', 'X', ' '],
+        [' ', 'X', ' ', ' ', ' ', ' ', ' ', 'X', ' ', 'X', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', 'X', 'F', 'X', 'X']]
 
 
-goal = (5, 0)
+goal = (len(maze)-1, len(maze[0])-3)
 origin = (0, 0)
 
 class Node():
-    def __init__(self, parent, coords):
+    def __init__(self, parent, coords, cost=-1):
         self.parent = parent
         self.coords = coords
         self.x = coords[1]
         self.y = coords[0]
         self.neighbors = self.getNeighbors()
         self.heuristic = self.manhattan()
+        self.cost = cost
+        if cost==-1:
+            self.cost = parent.cost + 1
 
     def __str__(self):
-        return ('Node loc: ('+str(self.y)+','+str(self.x)+') d: '+str(self.heuristic))
+        return ('Node loc: ('+str(self.y)+','+str(self.x)+') heuristic val: '+str(self.heuristic))
 
     def manhattan(self):
-        return abs(goal[1]-self.x) + abs(goal[0]-self.y)
+        dist = abs(goal[1]-self.x) + abs(goal[0]-self.y)
+        cost = 1
+        return dist+cost
 
     def euclidean(self):
         return math.sqrt((goal.x-self.x)**2 + (goal.y-self.y)**2)
@@ -86,7 +91,6 @@ class Frontier():
         print('##### FONTIER END ####\n\n')
 
     def removeNode(self) -> Node:
-        #print(self.frontier.index(self.shortestDistance()), 'shortest distance:', self.shortestDistance())
         return self.frontier.pop(self.frontier.index(self.shortestDistance()))
 
     def getLength(self):
@@ -123,35 +127,41 @@ def tracePath(endNode):
 
     return path[::-1]
 
-originNode =  Node(None, origin)
+originNode =  Node(None, origin, 0)
 f = Frontier()
 f.addNode(originNode)
 goalFound = False
 currentNode = None
+frontierEmpty = False
 
 printMaze()
 
-while not goalFound:
+while not goalFound and not frontierEmpty:
     f.showFrontier()
     # Pop node (will be the node that is shortest distance to the goal thru function in Frontier)
-    currentNode = f.removeNode()
-    #print(frontier)
-
-    if currentNode.coords == goal:
-        goalFound = True
+    if (len(f.frontier) == 0):
+        frontierEmpty = True
+        print('No solution')
     else:
-        # Add all neighbors in node of interest
-        #print(currentNode)
-        for neighbor in currentNode.neighbors:
-            if neighbor not in f.explored:
-                if isValid(neighbor):
-                    new = Node(currentNode, neighbor)
-                    f.addNode(new)
+        currentNode = f.removeNode()
 
-path = tracePath(currentNode)
-print('Path:', path)
+        if currentNode.coords == goal:
+            goalFound = True
+        else:
+            # Add all neighbors in node of interest
+            for neighbor in currentNode.neighbors:
+                if neighbor not in f.explored:
+                    if isValid(neighbor):
+                        new = Node(currentNode, neighbor)
+                        f.addNode(new)
 
-for loc in path:
-    maze[loc[0]][loc[1]] = 'O'
+if goalFound:
+    path = tracePath(currentNode)
+    print('Path:', path)
+
+    for loc in path:
+        maze[loc[0]][loc[1]] = 'O'
+
+    print('Path length:', len(path))
 
 gui.initialize(maze)
