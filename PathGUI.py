@@ -98,4 +98,3 @@ def initialize(maze):
 
     print('success')
     root.mainloop()
-
