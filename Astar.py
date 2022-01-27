@@ -40,18 +40,17 @@ class Node():
         self.x = coords[1]
         self.y = coords[0]
         self.neighbors = self.getNeighbors()
-        self.heuristic = self.manhattan()
         self.cost = cost
-        if cost==-1:
+        if self.cost==-1:
             self.cost = parent.cost + 1
+        self.heuristic = self.manhattan()
 
     def __str__(self):
         return ('Node loc: ('+str(self.y)+','+str(self.x)+') heuristic val: '+str(self.heuristic))
 
     def manhattan(self):
         dist = abs(goal[1]-self.x) + abs(goal[0]-self.y)
-        cost = 1
-        return dist+cost
+        return dist+self.cost
 
     def euclidean(self):
         return math.sqrt((goal.x-self.x)**2 + (goal.y-self.y)**2)
