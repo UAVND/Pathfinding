@@ -41,7 +41,7 @@ class Node():
         self.y = coords[0]
         self.neighbors = self.getNeighbors()
         self.cost = cost
-        if cost==-1:
+        if self.cost==-1:
             self.cost = parent.cost + 1
         self.heuristic = self.manhattan()
 
