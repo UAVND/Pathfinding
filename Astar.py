@@ -23,11 +23,11 @@ def dlog(string):
 
 
 maze = [['S', ' ', ' ', ' ', ' ', 'X', 'X'],
-        ['X', ' ', 'X', 'X', ' ', 'X', 'X'],
-        ['X', ' ', 'X', 'X', ' ', ' ', ' '],
-        [' ', ' ', ' ', 'X', 'X', 'X', ' '],
+        ['X', ' ', ' ', 'X', ' ', 'X', 'X'],
+        ['X', 'X', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', 'X', 'X', ' '],
         [' ', 'X', ' ', 'X', ' ', ' ', ' '],
-        ['F', 'X', ' ', ' ', ' ', 'X', 'X']]
+        ['F', ' ', ' ', ' ', ' ', 'X', 'X']]
 
 
 goal = (5, 0)
@@ -43,10 +43,10 @@ class Node():
         self.heuristic = self.manhattan()
 
     def __str__(self):
-        return ('Neighbors for this node: ' + str(self.neighbors))
+        return ('Node loc: ('+str(self.y)+','+str(self.x)+') d: '+str(self.heuristic))
 
     def manhattan(self):
-        return goal[1]-self.x + goal[0]-self.y
+        return abs(goal[1]-self.x) + abs(goal[0]-self.y)
 
     def euclidean(self):
         return math.sqrt((goal.x-self.x)**2 + (goal.y-self.y)**2)
@@ -54,10 +54,12 @@ class Node():
     def getNeighbors(self):
         neighbors = []
 
-        neighbors.append((self.x-1, self.y))
-        neighbors.append((self.x+1, self.y))
-        neighbors.append((self.x, self.y+1))
-        neighbors.append((self.x, self.y-1))
+        neighbors.append((self.y-1, self.x))
+        neighbors.append((self.y+1, self.x))
+        neighbors.append((self.y, self.x+1))
+        neighbors.append((self.y, self.x-1))
+
+        print('(',self.y,',',self.x,') | neighbors:',neighbors)
         
         return neighbors
 
@@ -74,10 +76,17 @@ class Frontier():
 
     def addNode(self, node: Node):
         self.frontier.append(node)
-        print('node added')
+        #print('node added')
         self.explored.add(node.coords)
 
+    def showFrontier(self):
+        print('### FRONTIER START ###')
+        for thing in self.frontier:
+            print(thing)
+        print('##### FONTIER END ####\n\n')
+
     def removeNode(self) -> Node:
+        #print(self.frontier.index(self.shortestDistance()), 'shortest distance:', self.shortestDistance())
         return self.frontier.pop(self.frontier.index(self.shortestDistance()))
 
     def getLength(self):
@@ -115,17 +124,18 @@ def tracePath(endNode):
     return path[::-1]
 
 originNode =  Node(None, origin)
-frontier = Frontier()
-frontier.addNode(originNode)
+f = Frontier()
+f.addNode(originNode)
 goalFound = False
 currentNode = None
 
 printMaze()
 
 while not goalFound:
+    f.showFrontier()
     # Pop node (will be the node that is shortest distance to the goal thru function in Frontier)
-    currentNode = frontier.removeNode()
-    print(frontier)
+    currentNode = f.removeNode()
+    #print(frontier)
 
     if currentNode.coords == goal:
         goalFound = True
@@ -133,10 +143,10 @@ while not goalFound:
         # Add all neighbors in node of interest
         #print(currentNode)
         for neighbor in currentNode.neighbors:
-            if neighbor not in frontier.explored:
+            if neighbor not in f.explored:
                 if isValid(neighbor):
                     new = Node(currentNode, neighbor)
-                    frontier.addNode(new)
+                    f.addNode(new)
 
 path = tracePath(currentNode)
 print('Path:', path)
@@ -144,4 +154,4 @@ print('Path:', path)
 for loc in path:
     maze[loc[0]][loc[1]] = 'O'
 
-#gui.initialize(maze)
+gui.initialize(maze)
