@@ -6,6 +6,24 @@
 from tkinter import *
 from tkinter import ttk
 import random
+import Astar as astar
+
+maze = [['S', ' ', ' ', ' ', ' ', 'X', 'X', ' ', ' ', 'X', ' ', 'X', 'X'],
+        ['X', ' ', 'X', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
+        ['X', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', 'X', ' ', ' '],
+        [' ', ' ', 'X', ' ', ' ', ' ', ' ', 'X', ' ', 'X', 'X', 'X', ' '],
+        [' ', ' ', ' ', 'X', 'X', ' ', 'X', 'X', ' ', 'X', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', 'X', 'X', ' ', ' ', 'X', ' ', 'X', 'X'],
+        ['X', ' ', ' ', 'X', ' ', 'X', 'X', ' ', ' ', 'X', ' ', 'X', 'X'],
+        ['X', 'X', ' ', ' ', ' ', 'X', ' ', ' ', 'X', ' ', 'X', ' ', ' '],
+        [' ', 'X', ' ', ' ', 'X', ' ', 'X', ' ', ' ', ' ', 'X', 'X', ' '],
+        [' ', 'X', ' ', 'X', ' ', ' ', 'X', ' ', ' ', 'X', ' ', 'X', ' '],
+        [' ', 'X', ' ', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', 'X', 'X'],
+        ['X', 'X', ' ', ' ', 'X', ' ', 'X', ' ', ' ', 'X', ' ', 'X', 'X'],
+        ['X', 'X', ' ', ' ', ' ', ' ', 'X', ' ', ' ', 'X', ' ', 'X', ' '],
+        [' ', 'X', ' ', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', 'X', ' '],
+        [' ', 'X', ' ', ' ', ' ', ' ', ' ', 'X', ' ', 'X', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', 'X', ' ', 'X', 'X']]
 
 window_width = 500
 window_height = 500
@@ -34,7 +52,11 @@ def deleteObstacle(grid, canvas):
     buildGrid(grid, canvas)
     print('Removed random obstacle')
 
-def buildGrid(grid, canvas):
+def pathfind(alg, canvas):
+    if alg=='A*':
+        astar.findPath(canvas)
+
+def buildGrid(grid, canvas : Canvas):
     box_width = 20
     box_height = 20
 
@@ -86,16 +108,19 @@ def initialize(maze):
 
     #print('initialized')
 
-    algs = ['select algorithm', 'A*', 'Dijkstra', 'Elastic']
-    selected_alg = StringVar()
+    algs = ['A*', 'Dijkstra', 'Elastic']
+    selected_alg = StringVar(root)
+    selected_alg.set(algs[0])
 
     ttk.OptionMenu(option_frame, selected_alg, *algs).grid(column=0, row=0, padx=20)
-    ttk.Button(option_frame, text='Quit', command=root.destroy).grid(column=1, row=0)
-    ttk.Button(option_frame, text='Create random obstacle', command=lambda : createObstacle(maze, canv)).grid(column=2,row=0, padx=10)
-    ttk.Button(option_frame, text='Delete random obstacle', command=lambda : deleteObstacle(maze, canv)).grid(column=3,row=0, padx=10)
+    ttk.Button(option_frame, text='Start', command=lambda: pathfind(selected_alg.get(), canv)).grid(column=1, row=0, padx=10)
+    ttk.Button(option_frame, text='Quit', command=root.destroy).grid(column=2, row=0)
+    #ttk.Button(option_frame, text='Create random obstacle', command=lambda : createObstacle(maze, canv)).grid(column=2,row=0, padx=10)
+    #ttk.Button(option_frame, text='Delete random obstacle', command=lambda : deleteObstacle(maze, canv)).grid(column=3,row=0, padx=10)
 
     buildGrid(maze, canv)
 
     print('success')
     root.mainloop()
 
+initialize(maze)

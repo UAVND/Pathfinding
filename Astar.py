@@ -4,33 +4,17 @@
 # v1.0
 
 import math
+import time
 import PathGUI as gui
 
-debug = True
+debug = False
 def dlog(string):
     if debug:
         print(string)
 
+maze = gui.maze
 
-maze = [['S', ' ', ' ', ' ', ' ', 'X', 'X', ' ', ' ', 'X', ' ', 'X', 'X'],
-        ['X', ' ', 'X', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
-        ['X', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', 'X', ' ', ' '],
-        [' ', ' ', 'X', ' ', ' ', ' ', ' ', 'X', ' ', 'X', 'X', 'X', ' '],
-        [' ', ' ', ' ', 'X', 'X', ' ', 'X', 'X', ' ', 'X', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', 'X', 'X', ' ', ' ', 'X', ' ', 'X', 'X'],
-        ['X', ' ', ' ', 'X', ' ', 'X', 'X', ' ', ' ', 'X', ' ', 'X', 'X'],
-        ['X', 'X', ' ', ' ', ' ', 'X', ' ', ' ', 'X', ' ', 'X', ' ', ' '],
-        [' ', 'X', ' ', ' ', 'X', ' ', 'X', ' ', ' ', ' ', 'X', 'X', ' '],
-        [' ', 'X', ' ', 'X', ' ', ' ', 'X', ' ', ' ', 'X', ' ', 'X', ' '],
-        [' ', 'X', ' ', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', 'X', 'X'],
-        ['X', 'X', ' ', ' ', 'X', ' ', 'X', ' ', ' ', 'X', ' ', 'X', 'X'],
-        ['X', 'X', ' ', ' ', ' ', ' ', 'X', ' ', ' ', 'X', ' ', 'X', ' '],
-        [' ', 'X', ' ', ' ', 'X', ' ', 'X', ' ', ' ', ' ', ' ', 'X', ' '],
-        [' ', 'X', ' ', ' ', ' ', ' ', ' ', 'X', ' ', 'X', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', 'X', 'F', 'X', 'X']]
-
-
-goal = (len(maze)-1, len(maze[0])-3)
+goal = (len(maze)-5, len(maze[0])-3)
 origin = (0, 0)
 
 class Node():
@@ -53,7 +37,7 @@ class Node():
         return dist+self.cost
 
     def euclidean(self):
-        return math.sqrt((goal.x-self.x)**2 + (goal.y-self.y)**2)
+        return math.sqrt((goal[1]-self.x)**2 + (goal[0]-self.y)**2)
 
     def getNeighbors(self):
         neighbors = []
@@ -126,41 +110,47 @@ def tracePath(endNode):
 
     return path[::-1]
 
-originNode =  Node(None, origin, 0)
-f = Frontier()
-f.addNode(originNode)
-goalFound = False
-currentNode = None
-frontierEmpty = False
 
-printMaze()
+def findPath(canvas):
+    print('Starting A* pathfinding')
+    startTime = time.time()
 
-while not goalFound and not frontierEmpty:
-    f.showFrontier()
-    # Pop node (will be the node that is shortest distance to the goal thru function in Frontier)
-    if (len(f.frontier) == 0):
-        frontierEmpty = True
-        print('No solution')
-    else:
-        currentNode = f.removeNode()
+    originNode =  Node(None, origin, 0)
+    f = Frontier()
+    f.addNode(originNode)
+    goalFound = False
+    currentNode = None
+    frontierEmpty = False
 
-        if currentNode.coords == goal:
-            goalFound = True
+    printMaze()
+
+    while not goalFound and not frontierEmpty:
+        f.showFrontier()
+        # Pop node (will be the node that is shortest distance to the goal thru function in Frontier)
+        if (len(f.frontier) == 0):
+            frontierEmpty = True
+            print('No solution')
         else:
-            # Add all neighbors in node of interest
-            for neighbor in currentNode.neighbors:
-                if neighbor not in f.explored:
-                    if isValid(neighbor):
-                        new = Node(currentNode, neighbor)
-                        f.addNode(new)
+            currentNode = f.removeNode()
 
-if goalFound:
-    path = tracePath(currentNode)
-    print('Path:', path)
+            if currentNode.coords == goal:
+                goalFound = True
+            else:
+                # Add all neighbors in node of interest
+                for neighbor in currentNode.neighbors:
+                    if neighbor not in f.explored:
+                        if isValid(neighbor):
+                            new = Node(currentNode, neighbor)
+                            f.addNode(new)
 
-    for loc in path:
-        maze[loc[0]][loc[1]] = 'O'
+    if goalFound:
+        path = tracePath(currentNode)
+        print('Path:', path)
 
-    print('Path length:', len(path))
+        for loc in path:
+            maze[loc[0]][loc[1]] = 'O'
 
-gui.initialize(maze)
+        print('Path length:', len(path))
+
+    print('{} seconds'.format(time.time() - startTime))
+    gui.buildGrid(maze, canvas)
