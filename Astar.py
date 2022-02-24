@@ -7,6 +7,8 @@ import math
 import time
 import PathGUI as gui
 
+# plug in a maze and return a list (or graph later)
+
 debug = False
 def dlog(string):
     if debug:
