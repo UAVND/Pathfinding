@@ -89,3 +89,7 @@ def polygon(n, radius, src):
         long_lat_points.append(coordinate_pair)
 
     return long_lat_points
+
+
+
+#print(distance.distance((origin_latitude, origin_longitude), (latitude, longitude)).feet)
