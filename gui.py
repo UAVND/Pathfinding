@@ -70,9 +70,12 @@ class gui(object):
             
             if point.ptype == 'flyZones':
                 self.canvas.create_oval(x0, y0, x1, y1, fill='red')
-            elif point.ptype == 'obstacle':
-                self.canvas.create_oval(x0, y0, x1, y1, fill='orange')
+            elif point.ptype == 'stationaryObstacles':
+                self.canvas.create_oval(x0, y0, x1, y1, fill='black')
+            elif point.ptype == 'obBound':
+                self.canvas.create_oval(x0, y0, x1, y1, fill='brown')
             else:
+                print(point.ptype)
                 self.canvas.create_oval(x0, y0, x1, y1, fill='blue')
 
         self.add_bounds(graph)
@@ -89,7 +92,11 @@ class gui(object):
                 if len(point.links) >= 1:
                     for lp in point.links:
                         self.canvas.create_line(point.log,point.lat, graph.nodes[lp].log, graph.nodes[lp].lat, fill='red')
-    
+            elif point.ptype == 'obBound':
+                if len(point.links) >= 1:
+                    for lp in point.links:
+                        print(point.num)
+                        self.canvas.create_line(point.log,point.lat, graph.nodes[lp].log, graph.nodes[lp].lat, fill='black') 
     # connections to between waypoints etc
     def add_edges(self, graph):
         return

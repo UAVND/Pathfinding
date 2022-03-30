@@ -5,13 +5,14 @@ from os import link
 
 class point():
 
-    def __init__(self, lat, log, ptype, num):
+    def __init__(self, lat, log, ptype, num, data=None):
         self.lat = lat
         self.log = log
         self.num = num
         self.ptype = ptype
         self.links = []
         self.alive = True 
+        self.data = data
     
     def add_link(self, index):
         self.links.append(index)

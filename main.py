@@ -1,5 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
+from distutils.command.build import build
 import sys
 import json
 
@@ -19,7 +20,6 @@ def main(argv):
         for key, value in data.items():
             print(key)
             if key == 'waypoints':
-                print(value)
             #if type(value is int) or type(value is point):
                 for cords in value:
                     x = point(cords['latitude'], cords['longitude'] * -1, key, index)
@@ -55,10 +55,12 @@ def main(argv):
                         node.addNode(x)
                         index += 1
             
-            if key =='obstacle':
+            if key =='stationaryObstacles':
                 for cords in value:
-                    x = point(cords['latitude'], cords['longitude'] * -1, key, index)
+                    x = point(cords['latitude'], cords['longitude'] * -1, key, index, cords['radius'])
+                    node.build_obstacles(x)
                     node.addNode(x)
+                    index += 1
 
 
 
