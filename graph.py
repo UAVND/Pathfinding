@@ -63,7 +63,6 @@ class graph(object):
     Determines how many nodes need to be placed to fully represent the obstacle
     Inserts and links obstacle boundary nodes to the graph.
     
-    
     NOTE: multipling by the radius of the obstacle for index num to differentiate between other nodes
     NOTE: how do I order the nodes so that the links dont cross the middle
     '''
